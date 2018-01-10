@@ -23,13 +23,13 @@ const events = [
   }
 ];
 
-const telegramConfig = require('../../../config/config.json')
+const config = require('../../../.config/config.json')
 
 const listeners: Listener = {};
 
 export const init = () => {
   bot = new TeleBot({
-    token: telegramConfig.botToken, // Required. Telegram Bot API token.
+    token: process.env.botToken || config.botToken, // Required. Telegram Bot API token.
     polling: { // Optional. Use polling.
       interval: 1000, // Optional. How often check updates (in ms).
       timeout: 0, // Optional. Update polling timeout (0 - short polling).
