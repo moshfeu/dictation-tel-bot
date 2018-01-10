@@ -68,11 +68,19 @@ const ask = (delay: number, message: IMessage) => {
 }
 
 const onText = (message: IMessage) => {
-  // check that it's not command
-  if(!/\//.exec(message.text)) {
-    checkWord(message).then(() => {
-      ask(1000, message);
-    });
+  // if it's command
+  if(/\//.exec(message.text)) {
+    return;
+  }
+  switch (getRoute()) {
+    case Routes.ADD:
+      fireListeners(message);
+      break;
+    case Routes.WORD:
+      checkWord(message).then(() => {
+        ask(1000, message);
+      });
+      break;
   }
 }
 

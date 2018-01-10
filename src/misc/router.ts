@@ -6,7 +6,7 @@ export const Routes = {
 
 export type Route = typeof Routes[keyof typeof Routes];
 
-let _route: Route = Routes.WORD;
+let _route: Route;
 export const getRoute = (): Route => {
   return _route;
 }

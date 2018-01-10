@@ -10,6 +10,10 @@ firebaseInit();
 registerBotEvent(Routes.ADD, (message: IMessage) => {
   message.reply.text('wait..').then(() => {
     const [key, translate] = message.text.split(',');
+    if (!key || !translate) {
+      message.reply.text('your message is in invalid format, please fix it');
+      return;
+    }
     addWord({ key, translate}).then(() => message.reply.text(`'${key}' added successfully`));
   });
 });
