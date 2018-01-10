@@ -8,7 +8,7 @@ let config: IConfiguration;
 
 if (process.env.botToken) {
   const { botToken, firebaseConfig, firebaseDatabaseURL } = process.env;
-  config = { botToken, firebaseConfig, firebaseDatabaseURL };
+  config = { botToken, firebaseConfig: JSON.parse(firebaseConfig), firebaseDatabaseURL };
 } else {
   const conf = require('../../.config/config.json');
   const firebaseConfig = require('../../.config/serviceAccountKey.json')
