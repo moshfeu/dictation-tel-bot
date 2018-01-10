@@ -1,16 +1,15 @@
 import * as admin from 'firebase-admin';
 import { IWord, IChat } from '../firebase/types';
-import { RefKeys } from "./types";
+import { RefKeys } from './types';
+import { Configuration } from '../../misc/configuration-manager'
 
-const serviceAccount = require('../../../.config/serviceAccountKey.json');
-const config = require('../../../.config/config.json');
 let wordRef: admin.database.Reference;
 let chatsRef: admin.database.Reference;
 
 export const init = () => {
   admin.initializeApp({
-    credential: admin.credential.cert(process.env.firebaseConfig || serviceAccount),
-    databaseURL: process.env.firebaseDatabase || config.firebaseDatabase
+    credential: admin.credential.cert(Configuration.firebaseConfig),
+    databaseURL: Configuration.firebaseDatabaseURL
   });
 
   var db = admin.database();
