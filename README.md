@@ -1,8 +1,8 @@
-npm install typescript -g
-npm install typings --global
+```
 typings install --global dt~es6-shim
+```
 
-1. create `config` folder
+1. create `.config` folder
 2. put `serviceAccountKey.json` from firebase dashboard.
 3. create `config.json`. it should contains this props:
 
