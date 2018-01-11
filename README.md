@@ -29,7 +29,7 @@ typings install --global dt~es6-shim
 Bot [commands](https://core.telegram.org/bots#global-commands):
 
 1. `/start` start the game.
-2. `/word` add words to the game.
+2. `/add` add words to the game.
 
 *TODO*
 
