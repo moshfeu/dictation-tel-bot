@@ -30,8 +30,8 @@ export const init = () => {
   let polling, webhook;
   if (Configuration.prod) {
     webhook = {
-      url: `${Configuration.appURL}/bot/${Configuration.botToken}`,
-      port: Configuration.port
+      url: `${Configuration.appURL}bot/${Configuration.botToken}`,
+      port: Configuration.PORT
     };
   } else {
     polling = { // Optional. Use polling.

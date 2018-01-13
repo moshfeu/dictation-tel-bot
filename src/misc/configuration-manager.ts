@@ -4,14 +4,14 @@ export interface IConfiguration {
   firebaseDatabaseURL: string;
   appURL?: string;
   prod?: string;
-  port?: string;
+  PORT?: string;
 }
 
 let config: IConfiguration;
 
 if ((<any>process.env).botToken) {
-  const { botToken, firebaseConfig, firebaseDatabaseURL, appURL, prod, port } = process.env;
-  config = { botToken, firebaseConfig: JSON.parse(firebaseConfig), firebaseDatabaseURL, appURL, prod, port };
+  const { botToken, firebaseConfig, firebaseDatabaseURL, appURL, prod, PORT } = process.env;
+  config = { botToken, firebaseConfig: JSON.parse(firebaseConfig), firebaseDatabaseURL, appURL, prod, PORT };
 } else {
   const conf = require('../../.config/config.json');
   const firebaseConfig = require('../../.config/serviceAccountKey.json')
