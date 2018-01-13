@@ -59,6 +59,10 @@ export const init = () => {
 
   if (!Configuration.prod) {
     bot.start();
+  } else {
+    bot.on('message', function onMessage(msg) {
+      bot.sendMessage(msg.chat.id, 'I am alive on Heroku!');
+    });
   }
 
   return bot;
