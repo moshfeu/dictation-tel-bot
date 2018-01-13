@@ -27,21 +27,39 @@ const events = [
 const listeners: Listener = {};
 
 export const init = () => {
-  bot = new TeleBot({
-    token: Configuration.botToken, // Required. Telegram Bot API token.
-    polling: { // Optional. Use polling.
+  let polling, webhook;
+  if (Configuration.prod) {
+    webhook = {
+      url: `${Configuration.appURL}/bot/${Configuration.botToken}`,
+      port: Configuration.port
+    };
+  } else {
+    polling = { // Optional. Use polling.
       interval: 1000, // Optional. How often check updates (in ms).
       timeout: 0, // Optional. Update polling timeout (0 - short polling).
       limit: 100, // Optional. Limits the number of updates to be retrieved.
       retryTimeout: 5000, // Optional. Reconnecting timeout (in ms).
-    }
-  });
+    };
+  }
+
+  const options: TeleBot.config = {
+    token: Configuration.botToken, // Required. Telegram Bot API token.
+    polling,
+    webhook
+  };
+
+  console.log('---configuration', JSON.stringify(Configuration))
+  console.log('---initBotWith', JSON.stringify(options))
+
+  bot = new TeleBot(options);
 
   events.forEach(event => {
     bot.on(event.cmd, event.callback);
   });
 
-  bot.start();
+  if (!Configuration.prod) {
+    bot.start();
+  }
 
   return bot;
 }
