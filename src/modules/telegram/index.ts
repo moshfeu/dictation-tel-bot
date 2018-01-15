@@ -27,6 +27,14 @@ const events: {cmd: string | RegExp, callback: (message: TelegramBot.Message) =>
 
 const listeners: Listener = {};
 
+const shuffle = (arr: any[]) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 export const init = () => {
   const options: any = {};
   if (Configuration.prod) {
@@ -61,7 +69,8 @@ export const init = () => {
 
 export const start = (_words_: IWord[], message: TelegramBot.Message) => {
   setRoute(Routes.WORD);
-  words = _words_;
+  currentWord = 0;
+  words = shuffle(_words_);
   const { first_name, last_name } = message.chat;
   sendMessage(message, `Hi ${first_name} ${last_name}! New words are coming, lets play 😄`).then(() => {
     ask(1000, message);
