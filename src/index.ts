@@ -1,24 +1,25 @@
-import { start, init as botInit, register as registerBotEvent, register } from './modules/telegram';
+import { start, init as botInit, register as registerBotEvent, register, sendMessage } from './modules/telegram';
 import { listen, init as firebaseInit, addWord } from './modules/firebase';
 import { IWord, IChat } from './modules/firebase/types';
-import { IMessage } from './modules/telegram/types';
 import { Routes } from './misc/router';
+import * as TelegramBot from 'node-telegram-bot-api';
 
 botInit();
 firebaseInit();
 
-registerBotEvent(Routes.ADD, (message: IMessage) => {
-  message.reply.text('wait..').then(() => {
+registerBotEvent(Routes.ADD, (message: TelegramBot.Message) => {
+  sendMessage(message, 'wait..').then(() => {
     const [key, translate] = message.text.split(',');
     if (!key || !translate) {
-      message.reply.text('your message is in invalid format, please fix it');
+      sendMessage(message, 'your message is in invalid format, please fix it');
       return;
     }
-    addWord({ key, translate}).then(() => message.reply.text(`'${key}' added successfully`));
+    addWord({ key, translate}).then(() => sendMessage(message, `'${key}' was added successfully`));
   });
 });
 
-registerBotEvent(Routes.START, (message: IMessage) => {
+registerBotEvent(Routes.START, (message: TelegramBot.Message) => {
+  console.log('ask for start')
   listen((words: IWord[])  => {
     start(words, message);
   });
