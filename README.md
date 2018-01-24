@@ -1,6 +1,6 @@
 Create a dictation game on Telegram using Telegram Bot and firebase on node.js
 
-<img width="508" alt="screen shot 2018-01-11 at 6 00 55 pm" src="https://user-images.githubusercontent.com/3723951/34834126-d4594666-f6f9-11e7-98ec-eabcba871a87.png">
+<img width="508" alt="screenshot of the dictation game" src="https://user-images.githubusercontent.com/3723951/34834126-d4594666-f6f9-11e7-98ec-eabcba871a87.png">
 
 
 **Credits**
@@ -15,7 +15,9 @@ typings install --global dt~es6-shim
 
 1. create `config` folder (at root)
 2. put `serviceAccountKey.json` from [firebase](https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app).
-3. create `config.json`. it should contains this props:
+3. add a node in firebase **realtime** called `words`, like this:<br />
+   <img width="303" height="165" alt="screen shot of how the 'word' node should looks like in firebase" src="https://user-images.githubusercontent.com/3723951/35352575-140cbe3e-014d-11e8-97f7-c52d1a462cb1.png" />
+4. create `config.json`. it should contains this props:
 
 ```
 {
