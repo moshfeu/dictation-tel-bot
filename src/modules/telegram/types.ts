@@ -6,3 +6,9 @@ export type ListenerCallback = (message: TelegramBot.Message) => void;
 export type Listener = {
   [r in Route]?: ListenerCallback[];
 }
+
+export enum ContentType {
+  TEXT,
+  GIF,
+  AUDIO
+}

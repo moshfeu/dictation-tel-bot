@@ -1,10 +1,12 @@
-// import * as TeleBot from 'telebot';
 import * as TelegramBot from 'node-telegram-bot-api';
 import { IWord, IChat } from '../firebase/types';
 import { getRoute, setRoute, Routes, Route } from '../../misc/router';
-import { Listener, ListenerCallback } from './types';
+import { Listener, ListenerCallback, ContentType } from './types';
 import { Configuration } from '../../misc/configuration-manager';
 import * as net from 'net';
+import { ok, correction } from '../feedback';
+import { typeFetcher } from './type-fetcher';
+import { shuffle } from '../../misc/common';
 
 let bot: TelegramBot;
 let currentWord: number = 0;
@@ -26,14 +28,6 @@ const events: {cmd: string | RegExp, callback: (message: TelegramBot.Message) =>
 ];
 
 const listeners: Listener = {};
-
-const shuffle = (arr: any[]) => {
-  for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
 
 export const init = () => {
   const options: any = {};
@@ -109,9 +103,9 @@ const onText = (message: TelegramBot.Message) => {
 const checkWord = (message: TelegramBot.Message) => {
   if (message.text == words[currentWord].translate) {
     currentWord++;
-    return sendMessage(message, 'Well done 👍');
+    return ok(message);
   } else {
-    return sendMessage(message, 'Wrong answer 😓');
+    return correction(message);
   }
 }
 
@@ -141,5 +135,9 @@ export const register = (route: Route, callback: ListenerCallback) => {
 }
 
 export const sendMessage = (message: TelegramBot.Message, content: string) => {
-  return bot.sendMessage(message.chat.id, content);
+  const { id } = message.chat;
+  const method = typeFetcher.getMethod(bot, content);
+  console.log(method.name);
+
+  return method.call(bot, id, content);
 }

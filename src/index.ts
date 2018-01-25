@@ -19,7 +19,6 @@ registerBotEvent(Routes.ADD, (message: TelegramBot.Message) => {
 });
 
 registerBotEvent(Routes.START, (message: TelegramBot.Message) => {
-  console.log('ask for start')
   listen((words: IWord[])  => {
     start(words, message);
   });
