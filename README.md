@@ -27,6 +27,13 @@ typings install --global dt~es6-shim
 ```
 - `botToken` - from [`botFather`](https://core.telegram.org/bots#6-botfather)
 - `firebaseDatabaseURL` - from [`firebase` dashboard](https://firebase.google.com/docs/database/web/start)
+5. add texts.json to `config` folder, it should contains:
+```
+{
+  "compliments": [], // array of strings. support texts and url of giphy, .mp3 and .ogg
+  "corrections": []
+}
+```
 
 **Usage**
 
