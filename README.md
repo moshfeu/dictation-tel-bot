@@ -34,7 +34,6 @@ typings install --global dt~es6-shim
     "good",
     "http://yoursite.com/audio.mp3",
     "http://yoursite.com/audio.ogg",
-    "http://yoursite.com/audio.ogg",
     "http://yoursite.com/image.gif",
   ], // array of strings. support texts and url of .gif, .mp3 and .ogg
   "corrections": []
