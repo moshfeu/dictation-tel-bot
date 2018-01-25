@@ -1,3 +1,4 @@
+//#region imports
 import * as TelegramBot from 'node-telegram-bot-api';
 import { IWord, IChat } from '../firebase/types';
 import { getRoute, setRoute, Routes, Route } from '../../misc/router';
@@ -6,7 +7,8 @@ import { Configuration } from '../../misc/configuration-manager';
 import * as net from 'net';
 import { ok, correction } from '../feedback';
 import { typeFetcher } from './type-fetcher';
-import { shuffle } from '../../misc/common';
+import { shuffle, chunkArray } from '../../misc/common';
+//#endregion
 
 let bot: TelegramBot;
 let currentWord: number = 0;
@@ -22,54 +24,16 @@ const events: {cmd: string | RegExp, callback: (message: TelegramBot.Message) =>
     callback: (message: TelegramBot.Message) => onStart(message)
   },
   {
+    cmd: /\/list/,
+    callback: (message: TelegramBot.Message) => onList(message)
+  },
+  {
     cmd: 'message',
     callback: (message: TelegramBot.Message) => onText(message)
   }
 ];
 
 const listeners: Listener = {};
-
-export const init = () => {
-  const options: any = {};
-  if (Configuration.prod) {
-    options.webHook = {
-      port: Configuration.PORT
-    };
-  } else {
-    options.polling = true;
-  }
-
-  bot = new TelegramBot(Configuration.botToken, options);
-  console.log('bot started');
-
-  if (Configuration.prod) {
-    bot.setWebHook(`${Configuration.appURL}bot${Configuration.botToken}`);
-    console.log('setWebHook');
-  }
-
-  events.forEach(event => {
-    if (event.cmd instanceof RegExp) {
-      bot.onText(event.cmd, event.callback);
-    } else {
-      bot.on(event.cmd, event.callback);
-    }
-  });
-
-
-  bot.on('polling_error', (error) => {
-    console.log(error);  // => 'EFATAL'
-  });
-}
-
-export const start = (_words_: IWord[], message: TelegramBot.Message) => {
-  setRoute(Routes.WORD);
-  currentWord = 0;
-  words = shuffle(_words_);
-  const { first_name, last_name } = message.chat;
-  sendMessage(message, `Hi ${first_name} ${last_name}! New words are coming, lets play 😄`).then(() => {
-    ask(1000, message);
-  });
-}
 
 const ask = (delay: number, message: TelegramBot.Message) => {
   if (currentWord >= words.length) {
@@ -115,8 +79,22 @@ const onAdd = (message: TelegramBot.Message) => {
 }
 
 const onStart = (message: TelegramBot.Message) => {
+  console.log('---onStart');
   setRoute(Routes.START);
   fireListeners(message);
+}
+
+const onList = (message: TelegramBot.Message) => {
+  if (!words) {
+    console.error('there are no words');
+    sendMessage(message, 'sorry, please /start again');
+    return;
+  }
+  const buttons: TelegramBot.InlineKeyboardButton[] = words.map(w => ({
+    text: w.key,
+    callback_data: w.key
+  }));
+  sendMessageWithButtons(message, 'here is your words\n click on a word to see your options', buttons);
 }
 
 const fireListeners = (message: TelegramBot.Message) => {
@@ -124,6 +102,48 @@ const fireListeners = (message: TelegramBot.Message) => {
   if (routeListeners) {
     routeListeners.forEach(l => l(message));
   }
+}
+
+export const init = () => {
+  const options: any = {};
+  if (Configuration.prod) {
+    options.webHook = {
+      port: Configuration.PORT
+    };
+  } else {
+    options.polling = true;
+  }
+
+  bot = new TelegramBot(Configuration.botToken, options);
+  console.log('bot started');
+
+  if (Configuration.prod) {
+    bot.setWebHook(`${Configuration.appURL}bot${Configuration.botToken}`);
+    console.log('setWebHook');
+  }
+
+  events.forEach(event => {
+    if (event.cmd instanceof RegExp) {
+      bot.onText(event.cmd, event.callback);
+    } else {
+      bot.on(event.cmd, event.callback);
+    }
+  });
+
+
+  bot.on('polling_error', (error) => {
+    console.log(error);  // => 'EFATAL'
+  });
+}
+
+export const start = (_words_: IWord[], message: TelegramBot.Message) => {
+  setRoute(Routes.WORD);
+  currentWord = 0;
+  words = shuffle(_words_);
+  const { first_name, last_name } = message.chat;
+  sendMessage(message, `Hi ${first_name} ${last_name}! New words are coming, lets play 😄`).then(() => {
+    ask(1000, message);
+  });
 }
 
 export const register = (route: Route, callback: ListenerCallback) => {
@@ -134,10 +154,18 @@ export const register = (route: Route, callback: ListenerCallback) => {
   (<ListenerCallback[]>listeners[route]).push(callback);
 }
 
-export const sendMessage = (message: TelegramBot.Message, content: string) => {
+export const sendMessage = (message: TelegramBot.Message, content: string, options?: TelegramBot.SendMessageOptions) => {
   const { id } = message.chat;
   const method = typeFetcher.getMethod(bot, content);
-  console.log(method.name);
 
-  return method.call(bot, id, content);
+  return method.call(bot, id, content, options);
+}
+
+export const sendMessageWithButtons = (message: TelegramBot.Message, content: string, buttons: TelegramBot.InlineKeyboardButton[], chunkSize = 2) => {
+  const inline_keyboard = chunkArray(buttons, chunkSize);
+  return sendMessage(message, content, {
+    reply_markup: {
+      inline_keyboard
+    }
+  });
 }
