@@ -30,7 +30,13 @@ typings install --global dt~es6-shim
 5. add texts.json to `config` folder, it should contains:
 ```
 {
-  "compliments": [], // array of strings. support texts and url of giphy, .mp3 and .ogg
+  "compliments": [
+    "good",
+    "http://yoursite.com/audio.mp3",
+    "http://yoursite.com/audio.ogg",
+    "http://yoursite.com/audio.ogg",
+    "http://yoursite.com/image.gif",
+  ], // array of strings. support texts and url of .gif, .mp3 and .ogg
   "corrections": []
 }
 ```
