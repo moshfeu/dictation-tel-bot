@@ -3,15 +3,15 @@ Create a dictation game on Telegram using Telegram Bot and firebase on node.js
 <img width="508" alt="screenshot of the dictation game" src="https://user-images.githubusercontent.com/3723951/34834126-d4594666-f6f9-11e7-98ec-eabcba871a87.png">
 
 
-**Credits**
+Thanks to [@yagop](https://github.com/yagop) for the great package [node-telegram-bot-api](https://github.com/yagop/node-telegram-bot-api)
 
-[node-telegram-bot-api](https://github.com/yagop/node-telegram-bot-api)
-
-**Installation**
+# Installation
 
 ```
 typings install --global dt~es6-shim
 ```
+
+If your code is public and you care about sensitive data, please read the [`build`](#build) section.
 
 1. create `config` folder (at root)
 2. put `serviceAccountKey.json` from [firebase](https://firebase.google.com/docs/admin/setup#add_firebase_to_your_app).
@@ -40,14 +40,45 @@ typings install --global dt~es6-shim
 }
 ```
 
-**Usage**
+# Usage
 
 Bot [commands](https://core.telegram.org/bots#global-commands):
 
-1. `/start` start the game.
-2. `/add` add words to the game.
+1. `/start` start the bot.
+2. `/test` start the test.
+3. `/add` add words to the game.
+4. `/list` review and delete words from the list.
+
+# Build
+
+If your code is not public, just remove the `config` folder from `.gitignore` so it will push all of the files to the server.<br />
+Otherwise, make sure that `env` will contains the following variables:
+
+- appURL
+- botToken
+- firebaseConfig
+- firebaseDatabaseURL
+- prod -> `true`
+
+And read the next section
+
+*Some facts:*
+- I'm using _Heroku_ to host my app.
+- The messages about right/wrong answer can be configured in `config/texts.json`.
+- We want to allow people to use thier own files (such as `.gif` etc.)
+- Therefore:
+  - The file contents shouldn't be public
+  - We are storing the data in `env` variable.
+  - We need to update `env` from the `texts.json` file.
+
+**Conclution**<br />
+`build/pre-push.js` push `texts.json` content as `env` param.
+
+*If you are using defferent hosting than _Heroku_, modify this file so it will push the texts to your server*
+
+
 
 *TODO*
 
-1. Add more commands (`/view`, `/delete` etc.).
+1. Add more commands (`/delete` etc.).
 2. Add tests
