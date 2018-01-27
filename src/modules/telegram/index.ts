@@ -8,6 +8,7 @@ import * as net from 'net';
 import { ok, correction } from '../feedback';
 import { typeFetcher } from './type-fetcher';
 import { shuffle, chunkArray } from '../../misc/common';
+import { messaging } from 'firebase-admin';
 //#endregion
 
 let bot: TelegramBot;
@@ -24,6 +25,10 @@ const events: {cmd: string | RegExp, callback: (message: TelegramBot.Message) =>
     callback: (message: TelegramBot.Message) => onStart(message)
   },
   {
+    cmd: /\/test/,
+    callback: (message: TelegramBot.Message) => onTest(message)
+  },
+  {
     cmd: /\/list/,
     callback: (message: TelegramBot.Message) => onList(message)
   },
@@ -36,6 +41,9 @@ const events: {cmd: string | RegExp, callback: (message: TelegramBot.Message) =>
 const listeners: Listener = {};
 
 const ask = (delay: number, message: TelegramBot.Message) => {
+  if (!words || !words.length) {
+
+  }
   if (currentWord >= words.length) {
     sendMessage(message, 'You finished the test 🎉');
     return;
@@ -54,12 +62,20 @@ const onText = (message: TelegramBot.Message) => {
     case Routes.ADD:
       fireListeners(message);
       break;
-    case Routes.WORD:
+    case Routes.TEST:
       checkWord(message).then(() => {
         ask(1000, message);
       });
       break;
   }
+}
+
+const validateWords = (message: TelegramBot.Message) => {
+  if (!words || !words.length) {
+    sendMessage(message, 'Sorry, something went wrong 😓 please /start again');
+    return false;
+  }
+  return true;
 }
 
 const checkWord = (message: TelegramBot.Message) => {
@@ -76,23 +92,37 @@ const onAdd = (message: TelegramBot.Message) => {
   sendMessage(message, 'Please add a word like: word,translate');
 }
 
+const onTest = (message: TelegramBot.Message) => {
+  if (validateWords(message)) {
+    setRoute(Routes.TEST);
+    currentWord = 0;
+    sendMessage(message, `Lets play 😄`).then(() => {
+      ask(1000, message);
+    });
+  }
+}
+
 const onStart = (message: TelegramBot.Message) => {
   console.log('---onStart');
   setRoute(Routes.START);
+  const { first_name, last_name } = message.chat;
+  sendMessage(message,
+    `Hi ${first_name} ${last_name}! I'm the dictation bot😄\n
+To start the test use /test
+To add a word to the list use /add
+To see\\delete a word from the list use /list`
+    );
   fireListeners(message);
 }
 
 const onList = (message: TelegramBot.Message) => {
-  if (!words) {
-    console.error('there are no words');
-    sendMessage(message, 'sorry, please /start again');
-    return;
+  if (validateWords(message)) {
+    const buttons: TelegramBot.InlineKeyboardButton[] = words.map(w => ({
+      text: w.key,
+      callback_data: w.key
+    }));
+    sendMessageWithButtons(message, 'here is your words\n click on a word to see your options', buttons);
   }
-  const buttons: TelegramBot.InlineKeyboardButton[] = words.map(w => ({
-    text: w.key,
-    callback_data: w.key
-  }));
-  sendMessageWithButtons(message, 'here is your words\n click on a word to see your options', buttons);
 }
 
 const fireListeners = (message: TelegramBot.Message) => {
@@ -135,13 +165,7 @@ export const init = () => {
 }
 
 export const start = (_words_: IWord[], message: TelegramBot.Message) => {
-  setRoute(Routes.WORD);
-  currentWord = 0;
   words = shuffle(_words_);
-  const { first_name, last_name } = message.chat;
-  sendMessage(message, `Hi ${first_name} ${last_name}! New words are coming, lets play 😄`).then(() => {
-    ask(1000, message);
-  });
 }
 
 export const register = (route: Route, callback: ListenerCallback) => {

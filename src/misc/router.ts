@@ -1,6 +1,6 @@
 export const Routes = {
   ADD: 'add' as 'add',
-  WORD: 'word' as 'word',
+  TEST: 'test' as 'test',
   START: 'start' as 'start'
 }
 

@@ -19,8 +19,8 @@ if ((<any>process.env).botToken) {
   const conf = require('../../config/config.json');
   const firebaseConfig = require('../../config/serviceAccountKey.json')
   const texts = require('../../config/texts.json');
-  const { botToken, firebaseDatabaseURL } = conf;
-  config = { botToken, firebaseConfig, firebaseDatabaseURL };
+  const { botToken, firebaseDatabaseURL} = conf;
+  config = { botToken, firebaseConfig, firebaseDatabaseURL, texts };
 }
 
 export default config;
