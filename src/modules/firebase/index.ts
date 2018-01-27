@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
 import { IWord, IChat } from '../firebase/types';
 import { RefKeys } from './types';
-import { Configuration } from '../../misc/configuration-manager'
+import config from '../../misc/configuration-manager'
 import { objToArray } from '../../misc/common';
 
 let wordRef: admin.database.Reference;
@@ -9,8 +9,8 @@ let chatsRef: admin.database.Reference;
 
 export const init = () => {
   admin.initializeApp({
-    credential: admin.credential.cert(Configuration.firebaseConfig),
-    databaseURL: Configuration.firebaseDatabaseURL
+    credential: admin.credential.cert(config.firebaseConfig),
+    databaseURL: config.firebaseDatabaseURL
   });
 
   var db = admin.database();

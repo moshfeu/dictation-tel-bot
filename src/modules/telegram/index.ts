@@ -3,7 +3,7 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import { IWord, IChat } from '../firebase/types';
 import { getRoute, setRoute, Routes, Route } from '../../misc/router';
 import { Listener, ListenerCallback, ContentType } from './types';
-import { Configuration } from '../../misc/configuration-manager';
+import config from '../../misc/configuration-manager';
 import * as net from 'net';
 import { ok, correction } from '../feedback';
 import { typeFetcher } from './type-fetcher';
@@ -40,10 +40,8 @@ const ask = (delay: number, message: TelegramBot.Message) => {
     sendMessage(message, 'You finished the test 🎉');
     return;
   }
-  return new Promise((resolve: Function) => {
-    setTimeout(() => {
-      sendMessage(message, `What is "${words[currentWord].key}"?`);
-    }, delay);
+  setTimeout(() => {
+    sendMessage(message, `What is "${words[currentWord].key}"?`);
   });
 }
 
@@ -106,19 +104,19 @@ const fireListeners = (message: TelegramBot.Message) => {
 
 export const init = () => {
   const options: any = {};
-  if (Configuration.prod) {
+  if (config.prod) {
     options.webHook = {
-      port: Configuration.PORT
+      port: config.PORT
     };
   } else {
     options.polling = true;
   }
 
-  bot = new TelegramBot(Configuration.botToken, options);
+  bot = new TelegramBot(config.botToken, options);
   console.log('bot started');
 
-  if (Configuration.prod) {
-    bot.setWebHook(`${Configuration.appURL}bot${Configuration.botToken}`);
+  if (config.prod) {
+    bot.setWebHook(`${config.appURL}bot${config.botToken}`);
     console.log('setWebHook');
   }
 
