@@ -7,8 +7,12 @@
   },
   "scripts": {
     "start": "tsc && node ./dist/index.js",
-    "build:live": "nodemon --exec ts-node -- ./src/index.ts"
+    "build:live": "nodemon --exec ts-node -- ./src/index.ts",
+    "configure": "node ./build/pre-push.js"
   },
+  "pre-push": [
+    "configure"
+  ],
   "main": "lib/index",
   "types": "lib/index",
   "dependencies": {
@@ -117,6 +121,7 @@
   },
   "devDependencies": {
     "@types/node-telegram-bot-api": "^0.28.2",
-    "nodemon": "^1.14.7"
+    "nodemon": "^1.14.7",
+    "pre-push": "^0.1.1"
   }
 }
